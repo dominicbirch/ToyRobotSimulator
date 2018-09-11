@@ -27,7 +27,7 @@ namespace ToyRobotSimulator.Decorators
         {
             if (!_hasBeenPlaced)
             {
-                _logger?.LogTrace($"Not yet placed.");
+                _logger?.LogTrace("Not yet placed.");
 
                 return;
             }
@@ -83,7 +83,7 @@ namespace ToyRobotSimulator.Decorators
         {
             if (!_hasBeenPlaced)
             {
-                _logger?.LogTrace($"Not yet placed.");
+                _logger?.LogTrace("Not yet placed.");
 
                 return null;
             }
@@ -94,13 +94,13 @@ namespace ToyRobotSimulator.Decorators
         public void TurnLeft()
         {
             if (_hasBeenPlaced) _innerRobot.TurnLeft();
-            else _logger?.LogTrace($"Not yet placed.");
+            else _logger?.LogTrace("Not yet placed.");
         }
 
         public void TurnRight()
         {
             if (_hasBeenPlaced) _innerRobot.TurnRight();
-            else _logger?.LogTrace($"Not yet placed.");
+            else _logger?.LogTrace("Not yet placed.");
         }
     }
 }
