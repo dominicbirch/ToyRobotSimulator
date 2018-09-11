@@ -1,0 +1,48 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToyRobotSimulator.Abstractions", "ToyRobotSimulator.Abstractions\ToyRobotSimulator.Abstractions.csproj", "{54943DDD-9327-4B30-8403-C87B010D152D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToyRobotSimulator", "ToyRobotSimulator\ToyRobotSimulator.csproj", "{F74CE275-3C8E-4764-BE21-78ED64C1B310}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{F854A4BF-80E1-4235-B4FC-67CCA061F2FB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToyRobotSimulator.Tests", "ToyRobotSimulator.Tests\ToyRobotSimulator.Tests.csproj", "{C304CC9C-3AA7-4D81-8970-B119C7BEDCB9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToyRobotSimulator.Console", "ToyRobotSimulator.Console\ToyRobotSimulator.Console.csproj", "{4F8C06D6-DC0A-4AF1-B5DC-6E230A17CCEC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{54943DDD-9327-4B30-8403-C87B010D152D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54943DDD-9327-4B30-8403-C87B010D152D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54943DDD-9327-4B30-8403-C87B010D152D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54943DDD-9327-4B30-8403-C87B010D152D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F74CE275-3C8E-4764-BE21-78ED64C1B310}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F74CE275-3C8E-4764-BE21-78ED64C1B310}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F74CE275-3C8E-4764-BE21-78ED64C1B310}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F74CE275-3C8E-4764-BE21-78ED64C1B310}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C304CC9C-3AA7-4D81-8970-B119C7BEDCB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C304CC9C-3AA7-4D81-8970-B119C7BEDCB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C304CC9C-3AA7-4D81-8970-B119C7BEDCB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C304CC9C-3AA7-4D81-8970-B119C7BEDCB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F8C06D6-DC0A-4AF1-B5DC-6E230A17CCEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F8C06D6-DC0A-4AF1-B5DC-6E230A17CCEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F8C06D6-DC0A-4AF1-B5DC-6E230A17CCEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F8C06D6-DC0A-4AF1-B5DC-6E230A17CCEC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C304CC9C-3AA7-4D81-8970-B119C7BEDCB9} = {F854A4BF-80E1-4235-B4FC-67CCA061F2FB}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B34DE89D-85A7-412D-AF1D-17A82C55836C}
+	EndGlobalSection
+EndGlobal

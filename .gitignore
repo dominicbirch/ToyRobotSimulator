@@ -1,0 +1,16 @@
+*.log
+*.pem
+*.zip
+*.exe
+*.dll
+*.pdb
+*.suo
+*.user
+*.obj
+*.lock
+**/.vs/
+**/obj/
+**/bin/
+**/node_modules/
+/release/
+/debug/
