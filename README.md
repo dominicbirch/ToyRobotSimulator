@@ -28,3 +28,6 @@ MOVE
 REPORT
 Output: 3,3,NORTH
 ```
+
+## CLI
+It's possible to provide arguments on startup which are either commands to be executed in order or paths to files containing the commands.
