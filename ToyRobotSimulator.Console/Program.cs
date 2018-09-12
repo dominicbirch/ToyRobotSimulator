@@ -9,6 +9,7 @@ namespace ToyRobotSimulator
 {
     using Decorators;
     using System.Text.RegularExpressions;
+    using ToyRobotSimulator.Commands;
 
     public class Program
     {
@@ -19,68 +20,39 @@ namespace ToyRobotSimulator
         {
             Configure();
 
-            var robot = _serviceProvider.GetService<IRobot>();
+            var robot = _serviceProvider.GetRequiredService<IRobot>();
+            var parser = _serviceProvider.GetRequiredService<ICommandParser<IRobot>>();
 
-            Console.ForegroundColor = ConsoleColor.DarkGray;
-            Console.WriteLine("Enter an empty command twice to exit");
-            Console.ResetColor();
+            Print("Enter an empty command twice to exit", ConsoleColor.DarkGray);
 
             while (true)
             {
                 var input = Console.ReadLine();
                 if (string.IsNullOrWhiteSpace(input))
                 {
-                    Console.ForegroundColor = ConsoleColor.DarkBlue;
-                    Console.BackgroundColor = ConsoleColor.Gray;
-                    Console.WriteLine("Program will end.\r\nPress enter to confirm or enter another command to continue.");
-                    Console.ResetColor();
+                    Print("Program will end.\r\nPress enter to confirm or enter another command to continue.", ConsoleColor.DarkBlue, ConsoleColor.White);
 
                     input = Console.ReadLine();
                     if (string.IsNullOrEmpty(input)) return;
                 }
 
-                if (input.Equals("MOVE", StringComparison.InvariantCultureIgnoreCase))
-                    robot.MoveForward();
-
-                else if (input.Equals("LEFT", StringComparison.InvariantCultureIgnoreCase))
-                    robot.TurnLeft();
-
-                else if (input.Equals("RIGHT", StringComparison.InvariantCultureIgnoreCase))
-                    robot.TurnRight();
-
-                else if (input.Equals("REPORT", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    var report = robot.Report();
-                    Console.ForegroundColor = report == null ? ConsoleColor.DarkRed : ConsoleColor.Green;
-                    Console.WriteLine(report?.ToString() ?? "Robot has not been placed on the table.");
-                    Console.ResetColor();
-                }
-
-                else if (Regex.IsMatch(input, "^PLACE\\s+\\d+\\,\\s*\\d+\\s+\\w+\\s*$", RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(500)))
-                {
-                    var match = Regex.Match(input, "^PLACE\\s+(?'X'\\d+)\\s*\\,\\s*(?'Y'\\d+)\\s+(?'F'\\w+)\\s*$");
-                    var location = new Point(int.Parse(match.Groups["X"].Value), int.Parse(match.Groups["Y"].Value));
-                    var orientation = Enum.GetNames(typeof(Direction))
-                        .SingleOrDefault(n => n.Equals(match.Groups["F"].Value, StringComparison.InvariantCultureIgnoreCase));
-
-                    if (orientation == null)
-                    {
-                        Console.ForegroundColor = ConsoleColor.DarkRed;
-                        Console.WriteLine($"Unrecognized orientation:\t{match.Captures[3].Value}");
-                        Console.ResetColor();
-                    }
-                    else
-                        robot.Place(new Placement(location, Enum.Parse<Direction>(orientation)));
-                }
+                if (parser.TryParse(input, out var command))
+                    command.Execute(robot);
 
                 else
-                {
-                    Console.ForegroundColor = ConsoleColor.DarkRed;
-                    Console.WriteLine($"Unrecognized command:\t{input}");
-                    Console.ResetColor();
-                }
+                    Print($"Unrecognized command: {input}", ConsoleColor.DarkRed);
             }
         }
+
+
+        static void Print(string message = "", ConsoleColor colour = ConsoleColor.White, ConsoleColor backgroundColour = ConsoleColor.Black)
+        {
+            Console.ForegroundColor = colour;
+            Console.BackgroundColor = backgroundColour;
+            Console.WriteLine(message);
+            Console.ResetColor();
+        }
+
 
         static void Configure()
         {
@@ -113,11 +85,16 @@ namespace ToyRobotSimulator
                 _configuration.GetValue<int>("TableDimensions:Northeast:Y"));
 
             services
+                .AddSingleton<RobotCommandParser.RobotReportCallback>(report => Print(report?.ToString() ?? "Robot has not been placed on the table.", report == null ? ConsoleColor.DarkRed : ConsoleColor.Green))
+                .AddSingleton<ICommandParser<IRobot>, RobotCommandParser>()
+
                 .AddSingleton<IEnvironment>(s => new BasicTableSurface(southwest, northeast))
                 .AddTransient<IRobot>(s => new ConstrainedRobot(new Robot(s.GetService<ILogger<Robot>>()),
                     s.GetRequiredService<IEnvironment>(),
                     s.GetService<ILogger<ConstrainedRobot>>()));
         }
+
+
 
         public class ServiceFactory<T> : IFactory<T>
         {
