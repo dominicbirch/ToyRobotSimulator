@@ -35,5 +35,15 @@ namespace ToyRobotSimulator.Tests
             Assert.False(result);
             Assert.Null(command);
         }
+
+        [Fact]
+        public void HandlesNullInput()
+        {
+            var subject = new RobotCommandParser();
+            var result = subject.TryParse(null, out var command);
+
+            Assert.False(result);
+            Assert.Null(command);
+        }
     }
 }

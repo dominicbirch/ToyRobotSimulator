@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 namespace ToyRobotSimulator
 {
     using Decorators;
+    using System.IO;
     using System.Text.RegularExpressions;
     using ToyRobotSimulator.Commands;
 
@@ -20,11 +21,14 @@ namespace ToyRobotSimulator
         {
             Configure();
 
+            // Started with path(s) or command(s)
+            if (args.Any()) ProcessArgs(args);
+
             var robot = _serviceProvider.GetRequiredService<IRobot>();
             var parser = _serviceProvider.GetRequiredService<ICommandParser<IRobot>>();
 
-            Print("Enter an empty command twice to exit", ConsoleColor.DarkGray);
-
+            Print("=== INTERACTIVE MODE ===", ConsoleColor.Cyan);
+            Print("Enter an empty command twice to exit.", ConsoleColor.DarkGray);
             while (true)
             {
                 var input = Console.ReadLine();
@@ -44,6 +48,40 @@ namespace ToyRobotSimulator
             }
         }
 
+
+        static void ProcessArgs(string[] args)
+        {
+            var robot = _serviceProvider.GetRequiredService<IRobot>();
+            var parser = _serviceProvider.GetRequiredService<ICommandParser<IRobot>>();
+
+            foreach (var arg in args)
+                if (File.Exists(arg))
+                {
+                    Print($"=== FILE: {arg} ===", ConsoleColor.Cyan);
+
+                    // Input from file, builds a single command representing all valid commands, then executes it
+                    using (var reader = File.OpenText(arg))
+                        reader
+                            .ReadToEnd()
+                            .Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries)
+                            .Where(command => !string.IsNullOrWhiteSpace(command))
+                            .Aggregate(_serviceProvider.GetService<ICommandBuilder<IRobot>>(), (builder, input) =>
+                            {
+                                if (parser.TryParse(input, out var command))
+                                    builder.Add(command);
+
+                                return builder;
+                            })
+                            .Build()
+                            .Execute(robot);
+                }
+                // Otherwise try to parse a single command
+                else if (parser.TryParse(arg, out var command)) command.Execute(robot);
+                else if (!string.IsNullOrWhiteSpace(arg)) Print($"Unrecognized command: {arg}", ConsoleColor.DarkRed);
+
+            Print("End of commandline input.", ConsoleColor.DarkCyan);
+            Console.WriteLine();
+        }
 
         static void Print(string message = "", ConsoleColor colour = ConsoleColor.White, ConsoleColor backgroundColour = ConsoleColor.Black)
         {
@@ -87,11 +125,19 @@ namespace ToyRobotSimulator
             services
                 .AddSingleton<RobotCommandParser.RobotReportCallback>(report => Print(report?.ToString() ?? "Robot has not been placed on the table.", report == null ? ConsoleColor.DarkRed : ConsoleColor.Green))
                 .AddSingleton<ICommandParser<IRobot>, RobotCommandParser>()
+                .AddTransient(typeof(ICommandBuilder<>), typeof(CommandBuilder<>))
+                .AddSingleton<IEnvironment>(s => new BasicTableSurface(southwest, northeast));
 
-                .AddSingleton<IEnvironment>(s => new BasicTableSurface(southwest, northeast))
-                .AddTransient<IRobot>(s => new ConstrainedRobot(new Robot(s.GetService<ILogger<Robot>>()),
+            // C#7 local function in place of Func<IServiceProvider, IRobot> ^.^/
+            IRobot initializeRobot(IServiceProvider s) =>
+                new ConstrainedRobot(new Robot(s.GetService<ILogger<Robot>>()),
                     s.GetRequiredService<IEnvironment>(),
-                    s.GetService<ILogger<ConstrainedRobot>>()));
+                    s.GetService<ILogger<ConstrainedRobot>>());
+
+            if (_configuration.GetValue<bool>("NewRobotForInteractive"))
+                services.AddTransient(initializeRobot);
+            else
+                services.AddSingleton(initializeRobot);
         }
 
 
