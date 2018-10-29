@@ -19,7 +19,7 @@ namespace ToyRobotSimulator.Commands
 
         public ICommandBuilder<T> Add(ICommand<T> command)
         {
-            _sequence = Compose(_sequence, robot => command.Execute(robot));
+            _sequence = Compose(_sequence, command.Execute);
 
             return this;
         }
